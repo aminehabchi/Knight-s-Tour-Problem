@@ -1,4 +1,5 @@
 const N: usize = 5;
+
 const VECTORS: [[i32; 2]; 8] = [
     [2, 1],
     [-2, -1],
@@ -9,6 +10,7 @@ const VECTORS: [[i32; 2]; 8] = [
     [-1, 2],
     [1, -2],
 ];
+
 
 fn back_track(board: &mut [[i32; N]; N], y: usize, x: usize, move_nbr: i32) -> bool {
     if board[y][x] != -1 {
@@ -22,7 +24,7 @@ fn back_track(board: &mut [[i32; N]; N], y: usize, x: usize, move_nbr: i32) -> b
         return true;
     }
 
-    for vec in &VECTORS {
+    for vec in &utils::VECTORS {
         let new_x = x as i32 + vec[1];
         let new_y = y as i32 + vec[0];
         if new_x >= 0 && new_y >= 0 && new_x < N as i32 && new_y < N as i32 {
