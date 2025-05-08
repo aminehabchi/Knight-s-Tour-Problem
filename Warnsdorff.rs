@@ -1,4 +1,4 @@
-const N: usize = 5;
+const N: usize = 50;
 
 const VECTORS: [[i32; 2]; 8] = [
     [2, 1],
@@ -10,67 +10,62 @@ const VECTORS: [[i32; 2]; 8] = [
     [-1, 2],
     [1, -2],
 ];
+
 fn print_board(board: [[i32; N]; N]) {
     for row in &board {
         println!("{:?}", row);
     }
 }
 
-fn fewest__onward_moves(board: &mut [[i32; N]; N], x: i32, y: i32) -> i32 {
-    let mut counter=0;
+fn count_moves(board: &[[i32; N]; N], y: i32, x: i32) -> usize {
+    let mut counter = 0;
     for vec in &VECTORS {
-        let new_x = x as i32 + vec[1];
-        let new_y = y as i32 + vec[0];
-        if new_x >= 0 && new_y >= 0 && new_x < N as i32 && new_y < N as i32 {
-            if board[new_y as usize ,new_y as usize]!=-1{
-                counter+=1;
+        let newx = x + vec[0];
+        let newy = y + vec[1];
+        if newx >= 0 && newy >= 0 && newx < N as i32 && newy < N as i32 {
+            if board[newy as usize][newx as usize] == -1 {
+                counter += 1;
             }
         }
     }
     counter
 }
 
-fn Warnsdorff(board: &mut [[i32; N]; N], y: usize, x: usize, move_nbr: i32) -> bool {
-    if board[y][x] != -1 {
-        return false;
-    }
+fn warnsdorff(board: &mut [[i32; N]; N], y: usize, x: usize, move_nbr: i32) {
+    board[y][x] = move_nbr;
 
-    let m: i32 = move_nbr + 1;
-    board[y][x] = m;
+    let mut fewest = 9;
+    let mut next_x = 0;
+    let mut next_y = 0;
+    let mut found = false;
 
+    for (_, vec) in VECTORS.iter().enumerate() {
+        let newx = x as i32 + vec[0];
+        let newy = y as i32 + vec[1];
 
-    if m as usize == (N * N) {
-        return true;
-    }
+        if newx >= 0 && newy >= 0 && newx < N as i32 && newy < N as i32 {
+            let newx_usize = newx as usize;
+            let newy_usize = newy as usize;
 
-
-    let mut new_x = -1
-    let mut new_y = -1
-    let mut c=15
-    let index
-
-    for i in 1..n {
-        new_x = x as i32 + VECTORS[i][1];
-        new_y = y as i32 + VECTORS[i][0];
-        if new_x >= 0 && new_y >= 0 && (new_x as usize) < N && (new_y as usize) < N{
-          let counter= fewest__onward_moves(board,new_y,new_x)
-          if counter<
+            if board[newy_usize][newx_usize] == -1 {
+                let c = count_moves(board, newy, newx);
+                if c < fewest {
+                    fewest = c;
+                    next_x = newx_usize;
+                    next_y = newy_usize;
+                    found = true;
+                }
+            }
         }
     }
-    
-    if Warnsdorff(board, new_y as usize, new_x as usize, m) {
-        return true;
-    }
 
-       
-    board[y][x] = -1;
-    return false;
+    if found {
+        warnsdorff(board, next_y, next_x, move_nbr + 1);
+    }
 }
 
 fn main() {
     let mut matrix: [[i32; N]; N] = [[-1; N]; N];
-
-    Warnsdorff(&mut matrix, 0, 0, 0);
-
+    warnsdorff(&mut matrix, 0, 0, 0);
     print_board(matrix);
 }
